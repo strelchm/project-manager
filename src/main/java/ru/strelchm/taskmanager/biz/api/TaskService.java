@@ -6,6 +6,9 @@ import ru.strelchm.taskmanager.model.Task;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Сервис предоставления бизнес-логики заданий
+ */
 public interface TaskService {
 
     /**

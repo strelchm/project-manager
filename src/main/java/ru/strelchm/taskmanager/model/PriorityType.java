@@ -2,6 +2,9 @@ package ru.strelchm.taskmanager.model;
 
 import lombok.Getter;
 
+/**
+ * Тип приоритетности
+ */
 @Getter
 public enum PriorityType {
     LOWEST(1),

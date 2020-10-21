@@ -6,13 +6,17 @@ import ru.strelchm.taskmanager.biz.api.TaskListService;
 import ru.strelchm.taskmanager.biz.exception.DataNotFoundException;
 import ru.strelchm.taskmanager.biz.exception.IncorrectNameException;
 import ru.strelchm.taskmanager.model.TaskList;
-import ru.strelchm.taskmanager.persistense.repo.TaskListRepository;
+import ru.strelchm.taskmanager.repository.TaskListRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service //todo - разобраться с анноацией
+/**
+ * Реализация сервиса предоставления бизнес-логики списков заданий
+ */
+@Service //todo - разобраться с аннотацией
 public class TaskListServiceImpl implements TaskListService {
     @Autowired
     private TaskListRepository taskListRepository;
@@ -22,13 +26,15 @@ public class TaskListServiceImpl implements TaskListService {
         Optional<TaskList> taskList = taskListRepository.findById(taskListId);
 
         if (!taskList.isPresent()) {
-            throw new DataNotFoundException("Список заданий с id " + taskListId + " не найден в базе данных");
+            throw new DataNotFoundException("Tasklist with id " + taskListId + " not found in database");
         }
         return taskList.get();
     }
 
     @Override
-    public List<TaskList> getAllTaskLists() {
+    public List<TaskList> getAllTaskLists(int pageItemCount, String sortType, String sortDir, String title,
+                                          boolean todo, LocalDateTime createDate, LocalDateTime updateDate) {
+        // todo: реализовать пагинацию, фильтрацию, сортировку
         return taskListRepository.findAll();
     }
 

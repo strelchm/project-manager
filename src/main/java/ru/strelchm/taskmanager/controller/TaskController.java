@@ -3,14 +3,15 @@ package ru.strelchm.taskmanager.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.strelchm.taskmanager.biz.api.TaskService;
-import ru.strelchm.taskmanager.model.PriorityType;
 import ru.strelchm.taskmanager.model.Task;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST-контроллер для ресурсов "Задача"
+ */
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -28,11 +29,11 @@ public class TaskController {
     }
 
     @PutMapping("/{taskId}")
-    public Task updateTask(@RequestBody Task task, @PathVariable UUID taskId) {
+    public Task updateTask(@RequestBody @Valid Task task, @PathVariable UUID taskId) {
         return taskService.updateTaskById(task, taskId);
     }
 
-    @PutMapping("/{taskId}")
+    @PutMapping("/markDone/{taskId}")
     public Task markDoneTask(@PathVariable UUID taskId) {
         return taskService.markDoneTaskById(taskId);
     }
