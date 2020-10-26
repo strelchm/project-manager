@@ -1,9 +1,8 @@
 package ru.strelchm.taskmanager.biz.api;
 
-import org.springframework.web.bind.annotation.*;
-import ru.strelchm.taskmanager.model.Task;
+import ru.strelchm.taskmanager.model.entity.Task;
+import ru.strelchm.taskmanager.model.response_dto.TaskResponseDTO;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -13,6 +12,7 @@ public interface TaskService {
 
     /**
      * Получение задания по id
+     *
      * @param taskId
      * @return
      */
@@ -20,12 +20,14 @@ public interface TaskService {
 
     /**
      * Получение списка всех заданий
+     *
      * @return
      */
-    List<Task> getAllTasks();
+    TaskResponseDTO getTasksByTaskListIdAndDoneFlag(UUID taskListId, Boolean done);
 
     /**
      * Создание задания
+     *
      * @param task
      * @return
      */
@@ -33,6 +35,7 @@ public interface TaskService {
 
     /**
      * Обновление задания
+     *
      * @param task
      * @param taskId
      * @return
@@ -41,6 +44,7 @@ public interface TaskService {
 
     /**
      * Изменение готовности задания на "сделанное"
+     *
      * @param taskId
      * @return
      */
@@ -48,6 +52,7 @@ public interface TaskService {
 
     /**
      * Удаление задания по id
+     *
      * @param taskId
      */
     void deleteTaskById(UUID taskId);

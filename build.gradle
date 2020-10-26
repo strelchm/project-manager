@@ -19,17 +19,21 @@ repositories {
 }
 
 dependencies {
+	compileOnly 'org.projectlombok:lombok'
+	compileOnly("org.springframework.boot:spring-boot-devtools")
+
 	// Сваггер
-	implementation "io.springfox:springfox-boot-starter:3.0.0"
-	implementation 'io.springfox:springfox-swagger-ui'
+	implementation "io.springfox:springfox-boot-starter:3.0.0"	//	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
 	runtime 'org.postgresql:postgresql'
 	implementation 'javax.validation:validation-api'
-//	implementation 'org.liquibase:liquibase-core'
-	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.liquibase:liquibase-core:3.8.2'
+
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {

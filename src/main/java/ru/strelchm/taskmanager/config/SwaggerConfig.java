@@ -1,4 +1,4 @@
-package ru.strelchm.taskmanager;
+package ru.strelchm.taskmanager.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,8 @@ import springfox.documentation.spring.web.plugins.Docket;
  * Конфигурация для Swagger
  */
 @Configuration // todo: возможно перенести в главный класс приложения просто бином??
-public class SpringFoxConfig {
+//@EnableSwagger2
+public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)

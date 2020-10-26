@@ -1,17 +1,4 @@
-<changeSet id="01" author="postgres">
-    <createTable tableName="task_lists"
-                 remarks="A table to contain all task lists">
-        <column name="id" type="uuid">
-            <constraints nullable="false" unique="true" primaryKey="true"/>
-        </column>
-        <column name="title" type="varchar(255)">
-            <constraints nullable="false" unique="false"/>
-        </column>
-        <column name="author" type="int">
-            <constraints nullable="false"/>
-        </column>
-    </createTable>
-
+<changeSet id="20201027232930_create-tasks-table" author="strelchm">
     <createTable tableName="tasks"
                  remarks="A table to contain all tasks">
         <column name="id" type="uuid">
@@ -23,9 +10,9 @@
         <column name="description" type="varchar(255)">
             <constraints nullable="false" unique="false"/>
         </column>
-        <column name="priority" type="smallint" />
-        <column name="done" type="boolean" />
-        <column name="task_list_id" type="uunt" />
+        <column name="priority" type="varchar(50)"/>
+        <column name="done" type="boolean"/>
+        <column name="task_list_id" type="uuid"/>
     </createTable>
 
     <addForeignKeyConstraint baseTableName="tasks" baseColumnNames="task_list_id"

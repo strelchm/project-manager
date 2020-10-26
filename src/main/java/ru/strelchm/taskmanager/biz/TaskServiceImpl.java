@@ -1,15 +1,22 @@
 package ru.strelchm.taskmanager.biz;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import ru.strelchm.taskmanager.biz.api.TaskListService;
 import ru.strelchm.taskmanager.biz.api.TaskService;
 import ru.strelchm.taskmanager.biz.exception.AlreadyMarkDoneException;
 import ru.strelchm.taskmanager.biz.exception.DataNotFoundException;
+import ru.strelchm.taskmanager.biz.exception.DifferentRequestIdException;
 import ru.strelchm.taskmanager.biz.exception.IncorrectNameException;
-import ru.strelchm.taskmanager.model.Task;
+import ru.strelchm.taskmanager.model.entity.Task;
+import ru.strelchm.taskmanager.model.entity.TaskList;
+import ru.strelchm.taskmanager.model.response_dto.TaskResponseDTO;
 import ru.strelchm.taskmanager.repository.TaskRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +27,8 @@ import java.util.UUID;
 public class TaskServiceImpl implements TaskService {
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private TaskListService taskListService;
 
     @Override
     public Task getTaskById(UUID taskId) {
@@ -31,13 +40,27 @@ public class TaskServiceImpl implements TaskService {
         return task.get();
     }
 
+    @ExceptionHandler(PropertyReferenceException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Incorrect request property, check request")
     @Override
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public TaskResponseDTO getTasksByTaskListIdAndDoneFlag(UUID taskListId, Boolean done) {
+        TaskResponseDTO model = new TaskResponseDTO();
+        TaskList taskList = taskListService.getTaskListById(taskListId);
+
+        model.setTasks(taskRepository.findAllByTaskListAndDone(taskList, done));
+        model.setDoneTotalTaskCount(taskRepository.countAllByTaskListAndDone(taskList, true));
+        model.setTodoTotalTaskCount(taskRepository.countAllByTaskListAndDone(taskList, false));
+
+        return model;
     }
 
     @Override
     public Task createTask(Task task) {
+        if (task.getDone() == null) {
+            task.setDone(false);
+        } else if (task.getDone()) {
+            throw new AlreadyMarkDoneException("Created task " + task.getTitle() + " can't be done");
+        }
         return taskRepository.save(task);
     }
 
@@ -49,8 +72,14 @@ public class TaskServiceImpl implements TaskService {
             throw new IncorrectNameException("Task request name is empty");
         }
 
+        if (task.getId() != null && !task.getId().equals(taskId)) {
+            throw new DifferentRequestIdException("Request task id not equals to path variable");
+        }
+
         dbTask = this.getTaskById(taskId);
         dbTask.setTitle(task.getTitle());
+
+        taskRepository.save(dbTask);
 
         return dbTask;
     }
@@ -59,11 +88,13 @@ public class TaskServiceImpl implements TaskService {
     public Task markDoneTaskById(UUID taskId) {
         Task dbTask = this.getTaskById(taskId);
 
-        if(dbTask.isDone()) {
+        if (dbTask.getDone()) {
             throw new AlreadyMarkDoneException(dbTask);
         }
 
         dbTask.setDone(true);
+        taskRepository.save(dbTask);
+
         return dbTask;
     }
 

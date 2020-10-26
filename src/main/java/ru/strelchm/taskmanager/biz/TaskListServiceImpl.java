@@ -1,22 +1,31 @@
 package ru.strelchm.taskmanager.biz;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.strelchm.taskmanager.biz.api.TaskListService;
 import ru.strelchm.taskmanager.biz.exception.DataNotFoundException;
+import ru.strelchm.taskmanager.biz.exception.DifferentRequestIdException;
 import ru.strelchm.taskmanager.biz.exception.IncorrectNameException;
-import ru.strelchm.taskmanager.model.TaskList;
+import ru.strelchm.taskmanager.model.entity.TaskList;
+import ru.strelchm.taskmanager.model.response_dto.TaskListResponseDTO;
 import ru.strelchm.taskmanager.repository.TaskListRepository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static ru.strelchm.taskmanager.controller.TaskListController.DEFAULT_TASK_LIST_PAGE_SIZE;
 
 /**
  * Реализация сервиса предоставления бизнес-логики списков заданий
  */
-@Service //todo - разобраться с аннотацией
+@Service
 public class TaskListServiceImpl implements TaskListService {
     @Autowired
     private TaskListRepository taskListRepository;
@@ -26,16 +35,27 @@ public class TaskListServiceImpl implements TaskListService {
         Optional<TaskList> taskList = taskListRepository.findById(taskListId);
 
         if (!taskList.isPresent()) {
-            throw new DataNotFoundException("Tasklist with id " + taskListId + " not found in database");
+            throw new DataNotFoundException("Task list with id " + taskListId + " not found in database");
         }
         return taskList.get();
     }
 
+    // вместо 500 ошибки, если ошибочные данные в Pageable, напр. в значении сортировки или названии поля сортировки
+    @ExceptionHandler(PropertyReferenceException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Incorrect request property, check request")
     @Override
-    public List<TaskList> getAllTaskLists(int pageItemCount, String sortType, String sortDir, String title,
-                                          boolean todo, LocalDateTime createDate, LocalDateTime updateDate) {
-        // todo: реализовать пагинацию, фильтрацию, сортировку
-        return taskListRepository.findAll();
+    public TaskListResponseDTO getAllTaskLists(Pageable pageable, String title, LocalDateTime createDate, LocalDateTime updateDate) {
+        TaskListResponseDTO taskListResponseDTO = new TaskListResponseDTO();
+
+        if (pageable.getPageSize() < 0 || pageable.getPageSize() > 100) {
+            pageable = PageRequest.of(pageable.getPageNumber(), DEFAULT_TASK_LIST_PAGE_SIZE, pageable.getSort());
+        }
+
+        taskListResponseDTO.setTaskLists(taskListRepository.findByTitleAndAndCreateTimeAAndUpdateTime(title, createDate, updateDate, pageable));
+        taskListResponseDTO.setDoneTaskListCount(taskListRepository.countAllDoneTaskLists(title, createDate, updateDate));
+        taskListResponseDTO.setTodoTaskListCount(taskListResponseDTO.getTaskLists().getTotalElements() - taskListResponseDTO.getDoneTaskListCount());
+
+        return taskListResponseDTO;
     }
 
     @Override
@@ -51,8 +71,14 @@ public class TaskListServiceImpl implements TaskListService {
             throw new IncorrectNameException("Task list request name is empty");
         }
 
+        if (taskList.getId() != null && !taskList.getId().equals(taskListId)) {
+            throw new DifferentRequestIdException("Request task id not equals to path variable");
+        }
+
         dbTaskList = this.getTaskListById(taskListId);
         dbTaskList.setTitle(taskList.getTitle());
+
+        taskListRepository.save(dbTaskList);
 
         return dbTaskList;
     }

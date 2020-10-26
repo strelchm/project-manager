@@ -1,0 +1,14 @@
+<changeSet id="20201027232718_create-task-lists-table" author="strelchm">
+    <createTable tableName="task_lists"
+                 remarks="A table to contain all task lists">
+        <column name="id" type="uuid">
+            <constraints nullable="false" unique="true" primaryKey="true"/>
+        </column>
+        <column name="title" type="varchar(255)">
+            <constraints nullable="false" unique="false"/>
+        </column>
+        <column name="author" type="int">
+            <constraints nullable="false"/>
+        </column>
+    </createTable>
+</changeSet>

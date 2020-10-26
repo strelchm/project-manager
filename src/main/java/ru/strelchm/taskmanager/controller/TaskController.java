@@ -3,10 +3,10 @@ package ru.strelchm.taskmanager.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.strelchm.taskmanager.biz.api.TaskService;
-import ru.strelchm.taskmanager.model.Task;
+import ru.strelchm.taskmanager.model.entity.Task;
+import ru.strelchm.taskmanager.model.response_dto.TaskResponseDTO;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -19,8 +19,9 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
+    public TaskResponseDTO getAllTasks(@RequestParam(name = "taskListId") UUID taskListId,
+                                       @RequestParam(name = "done", required = false) Boolean done) {
+        return taskService.getTasksByTaskListIdAndDoneFlag(taskListId, done);
     }
 
     @PostMapping

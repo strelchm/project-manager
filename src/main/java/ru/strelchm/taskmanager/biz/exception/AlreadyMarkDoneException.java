@@ -2,7 +2,7 @@ package ru.strelchm.taskmanager.biz.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.strelchm.taskmanager.model.Task;
+import ru.strelchm.taskmanager.model.entity.Task;
 
 /**
  * RuntimeException, возникающий при попытке установить поле готовности в завершенное при уже завершенном задании
@@ -11,5 +11,9 @@ import ru.strelchm.taskmanager.model.Task;
 public class AlreadyMarkDoneException extends RuntimeException {
     public AlreadyMarkDoneException(Task task) {
         super("Task '" + task.getTitle() + "' is already marked done");
+    }
+
+    public AlreadyMarkDoneException(String message) {
+        super(message);
     }
 }

@@ -1,9 +1,11 @@
 package ru.strelchm.taskmanager.repository;
 
-
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.strelchm.taskmanager.model.Task;
+import ru.strelchm.taskmanager.model.entity.Task;
+import ru.strelchm.taskmanager.model.entity.TaskList;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,8 +16,23 @@ import java.util.UUID;
 @Repository
 public interface TaskRepository extends CrudRepository<Task, UUID> {
     /**
-     * Получение всех заданий
+     * Получение всех заданий по id и выполненности
+     *
      * @return - все задания, коллекция Task
      */
-    List<Task> findAll();
+    @Query("select t from Task t where " +
+            "t.taskList = :taskList and " +
+            "(t.done = :done or :done is null)")
+    List<Task> findAllByTaskListAndDone(
+            @Param("taskList") TaskList taskList,
+            @Param("done") Boolean done
+    );
+
+    /**
+     * Получение количества заданий с определенном булевом значении выполненности
+     *
+     * @param done - выполнено ли
+     * @return
+     */
+    Long countAllByTaskListAndDone(TaskList taskList, Boolean done);
 }
