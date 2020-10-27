@@ -14,6 +14,6 @@ import ru.strelchm.taskmanager.model.entity.TaskList;
 @Setter
 public class TaskListResponseDTO {
     private Page<TaskList> taskLists;
-    private Long todoTaskListCount; // расширение Pageable
-    private Long doneTaskListCount; // расширение Pageable
+    private Long todoTaskListCount; // стасттистика для расширения Pageable
+    private Long doneTaskListCount; // стасттистика для расширения расширение Pageable
 }

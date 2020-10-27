@@ -40,9 +40,9 @@ public class TaskListServiceImpl implements TaskListService {
         return taskList.get();
     }
 
-    // вместо 500 ошибки, если ошибочные данные в Pageable, напр. в значении сортировки или названии поля сортировки
-    @ExceptionHandler(PropertyReferenceException.class)
+    @ExceptionHandler(PropertyReferenceException.class) // вместо 500 ошибки, если ошибочные данные в Pageable, напр. в значении сортировки или названии поля сортировки
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Incorrect request property, check request")
+//    @PageableAsQueryParam // для маппинга Pageable в Swagger
     @Override
     public TaskListResponseDTO getAllTaskLists(Pageable pageable, String title, LocalDateTime createDate, LocalDateTime updateDate) {
         TaskListResponseDTO taskListResponseDTO = new TaskListResponseDTO();

@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -25,6 +22,7 @@ import java.util.List;
 public class TaskList extends BasicEntity {
     @NotNull
     @Size(min = 0, max = 256)
+    @Column(unique = true)
     private String title;
     @JsonIgnore
     @OneToMany(mappedBy = "taskList", fetch = FetchType.LAZY)

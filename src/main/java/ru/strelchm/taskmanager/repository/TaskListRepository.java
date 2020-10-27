@@ -21,8 +21,8 @@ public interface TaskListRepository extends PagingAndSortingRepository<TaskList,
      */
     @Query("select tl from TaskList tl " +
             "where (tl.title = :title or :title is null) and " +
-            "(tl.createTime = :createTime or cast(:createTime as java.time.LocalDateTime) is null) and " +
-            "(tl.updateTime = :updateTime or cast(:updateTime as java.time.LocalDateTime) is null)")
+            "(cast(:createTime as java.time.LocalDateTime) is null or tl.createTime = :createTime) and " +
+            "(cast(:updateTime as java.time.LocalDateTime) is null or tl.updateTime = :updateTime)")
     Page<TaskList> findByTitleAndAndCreateTimeAAndUpdateTime(
             @Param("title") String title,
             @Param("createTime") LocalDateTime createTime,
@@ -39,32 +39,12 @@ public interface TaskListRepository extends PagingAndSortingRepository<TaskList,
      */
     @Query("select count(tl) from TaskList tl join tl.tasks t where " +
             "(tl.title = :title or :title is null) and " +
-            "(tl.createTime = :createTime or cast(:createTime as java.time.LocalDateTime) is null) and " +
-            "(tl.updateTime = :updateTime or cast(:updateTime as java.time.LocalDateTime) is null) and " +
-            "(select count(t) from t where (t.done = false or t.done is null)) = 0")
+            "(cast(:createTime as java.time.LocalDateTime) is null or tl.createTime = :createTime) and " +
+            "(cast(:updateTime as java.time.LocalDateTime) is null or tl.updateTime = :updateTime) and " +
+            "(select count(t) from t where (t.done is null or t.done = false)) = 0")
     Long countAllDoneTaskLists(
             @Param("title") String title,
             @Param("createTime") LocalDateTime createTime,
             @Param("updateTime") LocalDateTime updateTime
     );
-
-//    /**
-//     * Получение количества невыполненных списков заданий
-//     *
-//     * @param title      - название
-//     * @param createTime - дата создания
-//     * @param updateTime - дата изменения
-//     * @return
-//     */
-//    @Deprecated
-//    @Query("select count(tl) from TaskList tl join tl.tasks t where " +
-//            "(tl.title = :title or :title is null) and " +
-//            "(tl.createTime = :createTime or cast(:createTime as java.time.LocalDateTime) is null) and " +
-//            "(tl.updateTime = :updateTime or cast(:updateTime as java.time.LocalDateTime) is null) and " +
-//            "(((select count(t) from t) = 0) or (select count(t) from t where (t.done = false or t.done is null) > 0))")
-//    Long countAllTodoTaskLists(
-//            @Param("title") String title,
-//            @Param("createTime") LocalDateTime createTime,
-//            @Param("updateTime") LocalDateTime updateTime
-//    );
 }

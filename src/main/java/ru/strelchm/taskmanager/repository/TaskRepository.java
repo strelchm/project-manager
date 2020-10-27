@@ -22,7 +22,7 @@ public interface TaskRepository extends CrudRepository<Task, UUID> {
      */
     @Query("select t from Task t where " +
             "t.taskList = :taskList and " +
-            "(t.done = :done or :done is null)")
+            "(:done is null or t.done = :done)")
     List<Task> findAllByTaskListAndDone(
             @Param("taskList") TaskList taskList,
             @Param("done") Boolean done
