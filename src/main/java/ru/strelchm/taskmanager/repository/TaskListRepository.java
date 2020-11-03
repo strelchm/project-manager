@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-import ru.strelchm.taskmanager.model.entity.TaskList;
+import ru.strelchm.taskmanager.model.dbo.TaskListDBO;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,17 +13,17 @@ import java.util.UUID;
 /**
  * Репозиторий списков заданий
  */
-public interface TaskListRepository extends PagingAndSortingRepository<TaskList, UUID> {
+public interface TaskListRepository extends PagingAndSortingRepository<TaskListDBO, UUID> {
     /**
      * Получение всех списков заданий
      *
      * @return - все списки заданий, коллекция TaskList
      */
-    @Query("select tl from TaskList tl " +
+    @Query("select tl from TaskListDBO tl " +
             "where (tl.title = :title or :title is null) and " +
             "(cast(:createTime as java.time.LocalDateTime) is null or tl.createTime = :createTime) and " +
             "(cast(:updateTime as java.time.LocalDateTime) is null or tl.updateTime = :updateTime)")
-    Page<TaskList> findByTitleAndAndCreateTimeAAndUpdateTime(
+    Page<TaskListDBO> findByTitleAndAndCreateTimeAAndUpdateTime(
             @Param("title") String title,
             @Param("createTime") LocalDateTime createTime,
             @Param("updateTime") LocalDateTime updateTime,
@@ -35,9 +35,8 @@ public interface TaskListRepository extends PagingAndSortingRepository<TaskList,
      * @param title      - название
      * @param createTime - дата создания
      * @param updateTime - дата изменения
-     * @return
      */
-    @Query("select count(tl) from TaskList tl join tl.tasks t where " +
+    @Query("select count(tl) from TaskListDBO tl join tl.tasks t where " +
             "(tl.title = :title or :title is null) and " +
             "(cast(:createTime as java.time.LocalDateTime) is null or tl.createTime = :createTime) and " +
             "(cast(:updateTime as java.time.LocalDateTime) is null or tl.updateTime = :updateTime) and " +

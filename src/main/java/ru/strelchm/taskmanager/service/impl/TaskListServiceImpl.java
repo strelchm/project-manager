@@ -1,19 +1,16 @@
-package ru.strelchm.taskmanager.biz;
+package ru.strelchm.taskmanager.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mapping.PropertyReferenceException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.strelchm.taskmanager.biz.api.TaskListService;
-import ru.strelchm.taskmanager.biz.exception.DataNotFoundException;
-import ru.strelchm.taskmanager.biz.exception.DifferentRequestIdException;
-import ru.strelchm.taskmanager.biz.exception.IncorrectNameException;
-import ru.strelchm.taskmanager.model.entity.TaskList;
-import ru.strelchm.taskmanager.model.response_dto.TaskListResponseDTO;
+import ru.strelchm.taskmanager.model.dbo.TaskListGroupDBO;
+import ru.strelchm.taskmanager.service.api.TaskListService;
+import ru.strelchm.taskmanager.exception.DataNotFoundException;
+import ru.strelchm.taskmanager.exception.DifferentRequestIdException;
+import ru.strelchm.taskmanager.exception.IncorrectNameException;
+import ru.strelchm.taskmanager.model.dbo.TaskListDBO;
+import ru.strelchm.taskmanager.model.dto.TaskListGroupDTO;
 import ru.strelchm.taskmanager.repository.TaskListRepository;
 
 import java.time.LocalDateTime;
@@ -31,8 +28,8 @@ public class TaskListServiceImpl implements TaskListService {
     private TaskListRepository taskListRepository;
 
     @Override
-    public TaskList getTaskListById(UUID taskListId) {
-        Optional<TaskList> taskList = taskListRepository.findById(taskListId);
+    public TaskListDBO getTaskListById(UUID taskListId) {
+        Optional<TaskListDBO> taskList = taskListRepository.findById(taskListId);
 
         if (!taskList.isPresent()) {
             throw new DataNotFoundException("Task list with id " + taskListId + " not found in database");
@@ -40,32 +37,34 @@ public class TaskListServiceImpl implements TaskListService {
         return taskList.get();
     }
 
-    @ExceptionHandler(PropertyReferenceException.class) // вместо 500 ошибки, если ошибочные данные в Pageable, напр. в значении сортировки или названии поля сортировки
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Incorrect request property, check request")
 //    @PageableAsQueryParam // для маппинга Pageable в Swagger
     @Override
-    public TaskListResponseDTO getAllTaskLists(Pageable pageable, String title, LocalDateTime createDate, LocalDateTime updateDate) {
-        TaskListResponseDTO taskListResponseDTO = new TaskListResponseDTO();
+    public TaskListGroupDBO getAllTaskLists(Pageable pageable, String title, LocalDateTime createDate, LocalDateTime updateDate) {
+        System.out.println("yes");
+
+        TaskListGroupDBO taskListGroup = new TaskListGroupDBO();
 
         if (pageable.getPageSize() < 0 || pageable.getPageSize() > 100) {
             pageable = PageRequest.of(pageable.getPageNumber(), DEFAULT_TASK_LIST_PAGE_SIZE, pageable.getSort());
         }
 
-        taskListResponseDTO.setTaskLists(taskListRepository.findByTitleAndAndCreateTimeAAndUpdateTime(title, createDate, updateDate, pageable));
-        taskListResponseDTO.setDoneTaskListCount(taskListRepository.countAllDoneTaskLists(title, createDate, updateDate));
-        taskListResponseDTO.setTodoTaskListCount(taskListResponseDTO.getTaskLists().getTotalElements() - taskListResponseDTO.getDoneTaskListCount());
+        taskListGroup.setTaskLists(taskListRepository.findByTitleAndAndCreateTimeAAndUpdateTime(title, createDate, updateDate, pageable));
+        taskListGroup.setDoneTaskListCount(taskListRepository.countAllDoneTaskLists(title, createDate, updateDate));
+        taskListGroup.setTodoTaskListCount(taskListGroup.getTaskLists().getTotalElements() - taskListGroup.getDoneTaskListCount());
 
-        return taskListResponseDTO;
+        System.out.println("no");
+
+        return taskListGroup;
     }
 
     @Override
-    public TaskList createTaskList(TaskList taskList) {
+    public TaskListDBO createTaskList(TaskListDBO taskList) {
         return taskListRepository.save(taskList);
     }
 
     @Override
-    public TaskList updateTaskListById(TaskList taskList, UUID taskListId) {
-        TaskList dbTaskList;
+    public TaskListDBO updateTaskListById(TaskListDBO taskList, UUID taskListId) {
+        TaskListDBO dbTaskList;
 
         if (taskList.getTitle().isEmpty()) {
             throw new IncorrectNameException("Task list request name is empty");

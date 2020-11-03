@@ -1,4 +1,4 @@
-package ru.strelchm.taskmanager.model.entity;
+package ru.strelchm.taskmanager.model.dbo;
 
 import lombok.Getter;
 

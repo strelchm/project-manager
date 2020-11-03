@@ -1,6 +1,8 @@
-package ru.strelchm.taskmanager.model.entity;
+package ru.strelchm.taskmanager.model.dbo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,14 +19,15 @@ import java.util.List;
 @Getter
 @Setter
 
+@ApiModel(description = "Сущность списка заданий")
 @Entity
 @Table(name = "task_lists")
-public class TaskList extends BasicEntity {
-    @NotNull
-    @Size(min = 0, max = 256)
+public class TaskListDBO extends BasicEntity {
+    @ApiModelProperty(notes = "Название", example = "1", required = true, position = 0)
     @Column(unique = true)
     private String title;
+
     @JsonIgnore
     @OneToMany(mappedBy = "taskList", fetch = FetchType.LAZY)
-    private List<Task> tasks;
+    private List<TaskDBO> tasks;
 }

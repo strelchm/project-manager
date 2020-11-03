@@ -34,8 +34,11 @@ dependencies {
 	compileOnly("org.springframework.boot:spring-boot-devtools")
 
 	// Сваггер
-	implementation "io.springfox:springfox-boot-starter:3.0.0"	//	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
-//	implementation "org.springdoc:springdoc-openapi-ui:1.4.8"
+	implementation "io.springfox:springfox-boot-starter:3.0.0"
+// 	compile 'io.springfox:springfox-bean-validators:3.0.0'
+
+// 	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+//	implementation 'org.springdoc:springdoc-openapi-ui:1.4.8'
 //	implementation "org.springdoc:springdoc-openapi-data-rest:1.4.8" // для разруливания документации в Pageable
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -45,6 +48,8 @@ dependencies {
 	runtime 'org.postgresql:postgresql'
 	implementation 'javax.validation:validation-api'
 	implementation 'org.liquibase:liquibase-core:3.8.2'
+
+	compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'

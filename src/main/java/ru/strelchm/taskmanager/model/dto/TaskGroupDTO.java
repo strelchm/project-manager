@@ -1,9 +1,8 @@
-package ru.strelchm.taskmanager.model.response_dto;
+package ru.strelchm.taskmanager.model.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.strelchm.taskmanager.model.entity.Task;
 
 import java.util.List;
 
@@ -13,8 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TaskResponseDTO {
-    private List<Task> tasks;
+public class TaskGroupDTO {
+    private List<TaskDTO> tasks;
     private Long todoTotalTaskCount;
     private Long doneTotalTaskCount;
 }

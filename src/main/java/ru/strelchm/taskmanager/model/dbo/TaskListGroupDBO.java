@@ -1,10 +1,9 @@
-package ru.strelchm.taskmanager.model.response_dto;
+package ru.strelchm.taskmanager.model.dbo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
-import ru.strelchm.taskmanager.model.entity.TaskList;
 
 /**
  * Обертка для ответа сервера над коллекцией списков заданий, содержащая доп. поля статистики
@@ -12,8 +11,8 @@ import ru.strelchm.taskmanager.model.entity.TaskList;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TaskListResponseDTO {
-    private Page<TaskList> taskLists;
+public class TaskListGroupDBO {
+    private Page<TaskListDBO> taskLists;
     private Long todoTaskListCount; // стасттистика для расширения Pageable
     private Long doneTaskListCount; // стасттистика для расширения расширение Pageable
 }

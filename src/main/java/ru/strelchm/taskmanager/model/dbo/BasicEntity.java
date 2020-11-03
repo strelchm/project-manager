@@ -1,4 +1,4 @@
-package ru.strelchm.taskmanager.model.entity;
+package ru.strelchm.taskmanager.model.dbo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +23,11 @@ public class BasicEntity {
     @GeneratedValue
     @Column(unique = true)
     private UUID id;
+
     @CreationTimestamp
     @Column(name = "create_time")
     private LocalDateTime createTime;
+
     @UpdateTimestamp
     @Column(name = "update_time")
     private LocalDateTime updateTime;

@@ -1,7 +1,8 @@
-package ru.strelchm.taskmanager.biz.api;
+package ru.strelchm.taskmanager.service.api;
 
-import ru.strelchm.taskmanager.model.entity.Task;
-import ru.strelchm.taskmanager.model.response_dto.TaskResponseDTO;
+import ru.strelchm.taskmanager.model.dbo.TaskDBO;
+import ru.strelchm.taskmanager.model.dbo.TaskGroupDBO;
+import ru.strelchm.taskmanager.model.dto.TaskGroupDTO;
 
 import java.util.UUID;
 
@@ -14,41 +15,35 @@ public interface TaskService {
      * Получение задания по id
      *
      * @param taskId
-     * @return
      */
-    Task getTaskById(UUID taskId);
+    TaskDBO getTaskById(UUID taskId);
 
     /**
      * Получение списка всех заданий
-     *
-     * @return
      */
-    TaskResponseDTO getTasksByTaskListIdAndDoneFlag(UUID taskListId, Boolean done);
+    TaskGroupDBO getTasksByTaskListIdAndDoneFlag(UUID taskListId, Boolean done);
 
     /**
      * Создание задания
      *
      * @param task
-     * @return
      */
-    Task createTask(Task task);
+    TaskDBO createTask(TaskDBO task);
 
     /**
      * Обновление задания
      *
      * @param task
      * @param taskId
-     * @return
      */
-    Task updateTaskById(Task task, UUID taskId);
+    TaskDBO updateTaskById(TaskDBO task, UUID taskId);
 
     /**
      * Изменение готовности задания на "сделанное"
      *
      * @param taskId
-     * @return
      */
-    Task markDoneTaskById(UUID taskId);
+    TaskDBO markDoneTaskById(UUID taskId);
 
     /**
      * Удаление задания по id
