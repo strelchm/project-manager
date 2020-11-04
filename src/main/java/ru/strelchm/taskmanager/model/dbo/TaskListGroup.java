@@ -11,8 +11,8 @@ import org.springframework.data.domain.Page;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TaskListGroupDBO {
-    private Page<TaskListDBO> taskLists;
+public class TaskListGroup {
+    private Page<TaskList> taskLists;
     private Long todoTaskListCount; // стасттистика для расширения Pageable
     private Long doneTaskListCount; // стасттистика для расширения расширение Pageable
 }

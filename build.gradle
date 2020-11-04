@@ -1,18 +1,18 @@
 plugins {
-	id 'org.springframework.boot' version '2.3.4.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-	id 'java'
-	id 'application'
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'application'
 }
 
 jar {
-	manifest {
-		attributes "Main-Class": "ru.strelchm.taskmanager.TaskManagerApplication"
-	}
+    manifest {
+        attributes "Main-Class": "ru.strelchm.taskmanager.TaskManagerApplication"
+    }
 
-	from {
-		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-	}
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 group = 'ru.strelchm'
@@ -20,46 +20,47 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	compileOnly 'org.projectlombok:lombok'
-	compileOnly("org.springframework.boot:spring-boot-devtools")
+    compileOnly 'org.projectlombok:lombok'
+    compileOnly("org.springframework.boot:spring-boot-devtools")
 
-	// Сваггер
-	implementation "io.springfox:springfox-boot-starter:3.0.0"
+    // Сваггер
+    implementation "io.springfox:springfox-boot-starter:3.0.0"
 // 	compile 'io.springfox:springfox-bean-validators:3.0.0'
 
 // 	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 //	implementation 'org.springdoc:springdoc-openapi-ui:1.4.8'
 //	implementation "org.springdoc:springdoc-openapi-data-rest:1.4.8" // для разруливания документации в Pageable
 
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	runtime 'org.postgresql:postgresql'
-	implementation 'javax.validation:validation-api'
-	implementation 'org.liquibase:liquibase-core:3.8.2'
+    runtime 'org.postgresql:postgresql'
+    runtime 'mysql:mysql-connector-java'
 
-	compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+    implementation 'javax.validation:validation-api'
+    implementation 'org.liquibase:liquibase-core:3.8.2'
 
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+    compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 }
 
 
-
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

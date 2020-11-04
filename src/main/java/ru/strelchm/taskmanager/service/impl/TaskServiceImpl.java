@@ -2,17 +2,16 @@ package ru.strelchm.taskmanager.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.strelchm.taskmanager.model.dbo.TaskGroupDBO;
-import ru.strelchm.taskmanager.service.api.TaskListService;
-import ru.strelchm.taskmanager.service.api.TaskService;
 import ru.strelchm.taskmanager.exception.AlreadyMarkDoneException;
 import ru.strelchm.taskmanager.exception.DataNotFoundException;
 import ru.strelchm.taskmanager.exception.DifferentRequestIdException;
-import ru.strelchm.taskmanager.exception.IncorrectNameException;
-import ru.strelchm.taskmanager.model.dbo.TaskDBO;
-import ru.strelchm.taskmanager.model.dbo.TaskListDBO;
-import ru.strelchm.taskmanager.model.dto.TaskGroupDTO;
+import ru.strelchm.taskmanager.exception.IncorrectDataException;
+import ru.strelchm.taskmanager.model.dbo.Task;
+import ru.strelchm.taskmanager.model.dbo.TaskGroup;
+import ru.strelchm.taskmanager.model.dbo.TaskList;
 import ru.strelchm.taskmanager.repository.TaskRepository;
+import ru.strelchm.taskmanager.service.api.TaskListService;
+import ru.strelchm.taskmanager.service.api.TaskService;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -28,8 +27,8 @@ public class TaskServiceImpl implements TaskService {
     private TaskListService taskListService;
 
     @Override
-    public TaskDBO getTaskById(UUID taskId) {
-        Optional<TaskDBO> task = taskRepository.findById(taskId);
+    public Task getTaskById(UUID taskId) {
+        Optional<Task> task = taskRepository.findById(taskId);
 
         if (!task.isPresent()) {
             throw new DataNotFoundException("Task with id " + taskId + " not found in database");
@@ -38,9 +37,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskGroupDBO getTasksByTaskListIdAndDoneFlag(UUID taskListId, Boolean done) {
-        TaskGroupDBO model = new TaskGroupDBO();
-        TaskListDBO taskList = taskListService.getTaskListById(taskListId);
+    public TaskGroup getTasksByTaskListIdAndDoneFlag(UUID taskListId, Boolean done) {
+        TaskGroup model = new TaskGroup();
+        TaskList taskList = taskListService.getTaskListById(taskListId);
 
         model.setTasks(taskRepository.findAllByTaskListAndDone(taskList, done));
         model.setDoneTotalTaskCount(taskRepository.countAllByTaskListAndDone(taskList, true));
@@ -50,7 +49,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDBO createTask(TaskDBO task) {
+    public Task createTask(Task task) {
         if (task.getDone() == null) {
             task.setDone(false);
         } else if (task.getDone()) {
@@ -60,11 +59,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDBO updateTaskById(TaskDBO task, UUID taskId) {
-        TaskDBO dbTaskDBO;
+    public Task updateTaskById(Task task, UUID taskId) {
+        Task dbTaskDBO;
 
         if (task.getTitle().isEmpty()) {
-            throw new IncorrectNameException("Task request name is empty");
+            throw new IncorrectDataException("Task request name is empty");
         }
 
         if (task.getId() != null && !task.getId().equals(taskId)) {
@@ -72,16 +71,25 @@ public class TaskServiceImpl implements TaskService {
         }
 
         dbTaskDBO = this.getTaskById(taskId);
-        dbTaskDBO.setTitle(task.getTitle());
 
-        taskRepository.save(dbTaskDBO);
+        if(task.getTitle() != null) {
+            dbTaskDBO.setTitle(task.getTitle());
+        }
 
-        return dbTaskDBO;
+        if(task.getDescription() != null) {
+            dbTaskDBO.setDescription(task.getDescription());
+        }
+
+        if(task.getPriority() != null) {
+            dbTaskDBO.setPriority(task.getPriority());
+        }
+
+        return taskRepository.save(dbTaskDBO);
     }
 
     @Override
-    public TaskDBO markDoneTaskById(UUID taskId) {
-        TaskDBO dbTaskDBO = this.getTaskById(taskId);
+    public Task markDoneTaskById(UUID taskId) {
+        Task dbTaskDBO = this.getTaskById(taskId);
 
         if (dbTaskDBO.getDone()) {
             throw new AlreadyMarkDoneException(dbTaskDBO);

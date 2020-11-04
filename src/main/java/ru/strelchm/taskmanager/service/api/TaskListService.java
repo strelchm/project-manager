@@ -1,9 +1,8 @@
 package ru.strelchm.taskmanager.service.api;
 
 import org.springframework.data.domain.Pageable;
-import ru.strelchm.taskmanager.model.dbo.TaskListDBO;
-import ru.strelchm.taskmanager.model.dbo.TaskListGroupDBO;
-import ru.strelchm.taskmanager.model.dto.TaskListGroupDTO;
+import ru.strelchm.taskmanager.model.dbo.TaskList;
+import ru.strelchm.taskmanager.model.dbo.TaskListGroup;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -17,7 +16,7 @@ public interface TaskListService {
      *
      * @param taskListId - индефикатор ресурса
      */
-    TaskListDBO getTaskListById(UUID taskListId);
+    TaskList getTaskListById(UUID taskListId);
 
     /**
      * Получение списка всех списков заданий
@@ -28,14 +27,14 @@ public interface TaskListService {
      * @param createDate – фильтр по дате создания
      * @param updateDate – фильтр по дате изменения
      */
-    TaskListGroupDBO getAllTaskLists(Pageable pageable, String title, LocalDateTime createDate, LocalDateTime updateDate);
+    TaskListGroup getAllTaskLists(Pageable pageable, String title, LocalDateTime createDate, LocalDateTime updateDate);
 
     /**
      * Создание списка заданий
      *
      * @param taskList - входной список заданий
      */
-    TaskListDBO createTaskList(TaskListDBO taskList);
+    TaskList createTaskList(TaskList taskList);
 
     /**
      * Обновление списка заданий
@@ -43,7 +42,7 @@ public interface TaskListService {
      * @param taskList   - входной список заданий
      * @param taskListId - индефикатор ресурса
      */
-    TaskListDBO updateTaskListById(TaskListDBO taskList, UUID taskListId);
+    TaskList updateTaskListById(TaskList taskList, UUID taskListId);
 
     /**
      * Удаление списка заданий по id

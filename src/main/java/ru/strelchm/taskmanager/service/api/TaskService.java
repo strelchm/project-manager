@@ -1,8 +1,7 @@
 package ru.strelchm.taskmanager.service.api;
 
-import ru.strelchm.taskmanager.model.dbo.TaskDBO;
-import ru.strelchm.taskmanager.model.dbo.TaskGroupDBO;
-import ru.strelchm.taskmanager.model.dto.TaskGroupDTO;
+import ru.strelchm.taskmanager.model.dbo.Task;
+import ru.strelchm.taskmanager.model.dbo.TaskGroup;
 
 import java.util.UUID;
 
@@ -16,19 +15,19 @@ public interface TaskService {
      *
      * @param taskId
      */
-    TaskDBO getTaskById(UUID taskId);
+    Task getTaskById(UUID taskId);
 
     /**
      * Получение списка всех заданий
      */
-    TaskGroupDBO getTasksByTaskListIdAndDoneFlag(UUID taskListId, Boolean done);
+    TaskGroup getTasksByTaskListIdAndDoneFlag(UUID taskListId, Boolean done);
 
     /**
      * Создание задания
      *
      * @param task
      */
-    TaskDBO createTask(TaskDBO task);
+    Task createTask(Task task);
 
     /**
      * Обновление задания
@@ -36,14 +35,14 @@ public interface TaskService {
      * @param task
      * @param taskId
      */
-    TaskDBO updateTaskById(TaskDBO task, UUID taskId);
+    Task updateTaskById(Task task, UUID taskId);
 
     /**
      * Изменение готовности задания на "сделанное"
      *
      * @param taskId
      */
-    TaskDBO markDoneTaskById(UUID taskId);
+    Task markDoneTaskById(UUID taskId);
 
     /**
      * Удаление задания по id

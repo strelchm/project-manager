@@ -12,8 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TaskGroupDBO {
-    private List<TaskDBO> tasks;
+public class TaskGroup {
+    private List<Task> tasks;
     private Long todoTotalTaskCount;
     private Long doneTotalTaskCount;
 }

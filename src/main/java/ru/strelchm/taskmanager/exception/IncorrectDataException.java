@@ -4,11 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Неверное имя REST-ресурса
+ * Неверные данные REST-ресурса
  */
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public class IncorrectNameException extends RuntimeException {
-    public IncorrectNameException(String message) {
+public class IncorrectDataException extends RuntimeException {
+    public IncorrectDataException(String message) {
         super(message);
     }
 }
