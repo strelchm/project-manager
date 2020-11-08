@@ -21,10 +21,14 @@ import java.util.UUID;
  */
 @Service
 public class TaskServiceImpl implements TaskService {
+    private final TaskRepository taskRepository;
+    private final TaskListService taskListService;
+
     @Autowired
-    private TaskRepository taskRepository;
-    @Autowired
-    private TaskListService taskListService;
+    public TaskServiceImpl(TaskRepository taskRepository, TaskListService taskListService) {
+        this.taskRepository = taskRepository;
+        this.taskListService = taskListService;
+    }
 
     @Override
     public Task getTaskById(UUID taskId) {
@@ -72,15 +76,15 @@ public class TaskServiceImpl implements TaskService {
 
         dbTaskDBO = this.getTaskById(taskId);
 
-        if(task.getTitle() != null) {
+        if (task.getTitle() != null) {
             dbTaskDBO.setTitle(task.getTitle());
         }
 
-        if(task.getDescription() != null) {
+        if (task.getDescription() != null) {
             dbTaskDBO.setDescription(task.getDescription());
         }
 
-        if(task.getPriority() != null) {
+        if (task.getPriority() != null) {
             dbTaskDBO.setPriority(task.getPriority());
         }
 

@@ -4,8 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.hibernate.QueryException;
-import org.modelmapper.PropertyMap;
-import org.modelmapper.TypeToken;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
@@ -15,7 +14,6 @@ import ru.strelchm.taskmanager.exception.IncorrectDataException;
 import ru.strelchm.taskmanager.exception.TaskPriorityUnrecognizeException;
 import ru.strelchm.taskmanager.model.dbo.Task;
 import ru.strelchm.taskmanager.model.dbo.TaskGroup;
-import ru.strelchm.taskmanager.model.dbo.TaskList;
 import ru.strelchm.taskmanager.model.dbo.TaskPriorityType;
 import ru.strelchm.taskmanager.model.dto.TaskDTO;
 import ru.strelchm.taskmanager.model.dto.TaskGroupDTO;
@@ -24,10 +22,7 @@ import ru.strelchm.taskmanager.service.api.TaskListService;
 import ru.strelchm.taskmanager.service.api.TaskService;
 
 import javax.validation.Valid;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -39,20 +34,13 @@ import java.util.UUID;
 public class TaskController {
     private final TaskService taskService;
     private final TaskListService taskListService;
-    private final MapperConfig mapper;
+    private final ModelMapper mapper;
 
     @Autowired
-    public TaskController(TaskService taskService, MapperConfig mapper, TaskListService taskListService) {
+    public TaskController(TaskService taskService, ModelMapper mapper, TaskListService taskListService) {
         this.mapper = mapper;
         this.taskService = taskService;
         this.taskListService = taskListService;
-
-        mapper.modelMapper().addMappings(new PropertyMap<Task, TaskDTO>() {
-            @Override
-            protected void configure() {
-                skip(destination.getPriority());
-            }
-        });
     }
 
     @GetMapping
@@ -63,7 +51,7 @@ public class TaskController {
             @ApiParam(name = "done", type = "boolean", value = "Фильтр по готовности задания", example = "true")
             @RequestParam(name = "done", required = false) Boolean done) {
         TaskGroup taskDBO = taskService.getTasksByTaskListIdAndDoneFlag(taskListId, done);
-        return convertTaskGroupDboToDto(taskDBO);
+        return mapper.map(taskDBO, TaskGroupDTO.class);
     }
 
     @PostMapping
@@ -80,7 +68,7 @@ public class TaskController {
 
         priorityType = getTaskPriorityTypeByValue(taskRequest);
 
-        if(priorityType == null) {
+        if (priorityType == null) {
             priorityType = TaskPriorityType.getDefaultPriorityType();
         }
 
@@ -94,7 +82,7 @@ public class TaskController {
 
         serviceResultDbo = taskService.createTask(dbo);
 
-        returnTask = mapper.modelMapper().map(serviceResultDbo, TaskDTO.class);
+        returnTask = mapper.map(serviceResultDbo, TaskDTO.class);
         returnTask.setPriority(serviceResultDbo.getPriority().getValue()); //TODO : hardcode
         return returnTask;
     }
@@ -112,7 +100,7 @@ public class TaskController {
 
         serviceResultDbo = taskService.updateTaskById(dbo, taskId);
 
-        returnTask = mapper.modelMapper().map(serviceResultDbo, TaskDTO.class);
+        returnTask = mapper.map(serviceResultDbo, TaskDTO.class);
         returnTask.setPriority(serviceResultDbo.getPriority().getValue()); //TODO : hardcode
         return returnTask;
     }
@@ -121,7 +109,7 @@ public class TaskController {
     @ApiOperation("Отметка готовности списка заданий (по идентификатору)")
     public TaskDTO markDoneTask(@PathVariable UUID taskId) {
         Task serviceResultDbo = taskService.markDoneTaskById(taskId);
-        TaskDTO returnTask = mapper.modelMapper().map(serviceResultDbo, TaskDTO.class);
+        TaskDTO returnTask = mapper.map(serviceResultDbo, TaskDTO.class);
 
         returnTask.setPriority(serviceResultDbo.getPriority().getValue()); //TODO : hardcode
         return returnTask;
@@ -154,7 +142,7 @@ public class TaskController {
      * Получение приоритетности по целочисленному значению
      */
     private TaskPriorityType getTaskPriorityTypeByValue(TaskRequestBodyDTO requestDto) {
-        if(requestDto.getPriority() == null) {
+        if (requestDto.getPriority() == null) {
             return null;
         }
 
@@ -165,31 +153,5 @@ public class TaskController {
         }
 
         return priorityType;
-    }
-
-    /**
-     * Конвертирование группового DBO в групповое DTO
-     *
-     * @param dboResponse
-     */
-    private TaskGroupDTO convertTaskGroupDboToDto(TaskGroup dboResponse) {
-        TaskGroupDTO dtoResponse = new TaskGroupDTO();
-        List<TaskDTO> dtoList = new ArrayList<>();
-//        Type listType = new TypeToken<List<TaskDTO>>() {
-//        }.getType();
-//
-//        List<TaskDTO> dtoList = mapper.modelMapper().map(dboResponse.getTasks(), listType); // todo сделать через маппер
-
-        for(Task td : dboResponse.getTasks()) {
-            TaskDTO task = mapper.modelMapper().map(td, TaskDTO.class);
-            task.setPriority(td.getPriority().getValue()); //TODO : hardcode
-            dtoList.add(task);
-        }
-
-        dtoResponse.setTasks(dtoList);
-        dtoResponse.setDoneTotalTaskCount(dboResponse.getDoneTotalTaskCount());
-        dtoResponse.setTodoTotalTaskCount(dboResponse.getTodoTotalTaskCount());
-
-        return dtoResponse;
     }
 }

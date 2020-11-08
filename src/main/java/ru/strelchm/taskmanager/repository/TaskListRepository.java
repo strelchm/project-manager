@@ -46,4 +46,6 @@ public interface TaskListRepository extends PagingAndSortingRepository<TaskList,
             @Param("createTime") LocalDateTime createTime,
             @Param("updateTime") LocalDateTime updateTime
     );
+
+    TaskList findByTitle(String title);
 }

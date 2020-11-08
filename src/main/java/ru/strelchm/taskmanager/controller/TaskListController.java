@@ -2,9 +2,9 @@ package ru.strelchm.taskmanager.controller;
 
 import io.swagger.annotations.*;
 import org.hibernate.QueryException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -36,10 +36,10 @@ public class TaskListController {
     public final static int DEFAULT_TASK_LIST_PAGE_SIZE = 10;
 
     private final TaskListService taskListService; // сервис с бизнес-логикой для заданий
-    private final MapperConfig mapper;
+    private final ModelMapper mapper;
 
     @Autowired
-    public TaskListController(TaskListService taskListService, MapperConfig mapper) {
+    public TaskListController(TaskListService taskListService, ModelMapper mapper) {
         this.taskListService = taskListService;
         this.mapper = mapper;
     }
@@ -75,7 +75,7 @@ public class TaskListController {
                                             @ApiParam(name = "updateDate", type = "String", value = "Фильтр по дате изменения списка в ISO-8601 календарной системе", example = "2020-11-04T16:31:55.492")
                                             @RequestParam(name = "updateDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updateDate) {
         TaskListGroup dboResponse = taskListService.getAllTaskLists(pageable, title, createDate, updateDate);
-        return convertTaskListGroupDboToDto(dboResponse);
+        return mapper.map(dboResponse, TaskListGroupDTO.class);
     }
 
     @PostMapping
@@ -89,7 +89,7 @@ public class TaskListController {
         dbo.setTitle(taskListTitle);
 
         serviceResultDbo = taskListService.createTaskList(dbo);
-        return mapper.modelMapper().map(serviceResultDbo, TaskListDTO.class);
+        return mapper.map(serviceResultDbo, TaskListDTO.class);
     }
 
     @PutMapping("/{taskListId}")
@@ -103,40 +103,13 @@ public class TaskListController {
 
         dbo.setTitle(taskListTitle);
         serviceResultDbo = taskListService.updateTaskListById(dbo, taskListId);
-        return mapper.modelMapper().map(serviceResultDbo, TaskListDTO.class);
+        return mapper.map(serviceResultDbo, TaskListDTO.class);
     }
 
     @DeleteMapping("/{taskListId}")
     @ApiOperation("Удаление списка заданий по идентификатору")
     public void deleteTaskList(@PathVariable UUID taskListId) {
         taskListService.deleteTaskListById(taskListId);
-    }
-
-
-    /**
-     * Конвертирование группового DBO в групповое DTO
-     *
-     * @param dboResponse
-     */
-    private TaskListGroupDTO convertTaskListGroupDboToDto(TaskListGroup dboResponse) {
-        TaskListGroupDTO dtoResponse = new TaskListGroupDTO();
-        Page<TaskListDTO> page = dboResponse.getTaskLists().map(dbo -> {
-            final TaskListDTO dto = new TaskListDTO();
-
-            dto.setTitle(dbo.getTitle());
-            dto.setCreateTime(dbo.getCreateTime());
-            dto.setUpdateTime(dbo.getUpdateTime());
-            dto.setId(dbo.getId());
-            dto.setTasks(dbo.getTasks());
-
-            return dto;
-        });
-
-        dtoResponse.setTaskLists(page);
-        dtoResponse.setDoneTaskListCount(dboResponse.getDoneTaskListCount());
-        dtoResponse.setTodoTaskListCount(dboResponse.getTodoTaskListCount());
-
-        return dtoResponse;
     }
 
     private static final String BAD_REQUEST_MESSAGE = "Bad request. Check request params";

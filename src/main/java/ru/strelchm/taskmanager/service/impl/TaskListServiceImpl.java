@@ -23,8 +23,12 @@ import static ru.strelchm.taskmanager.controller.TaskListController.DEFAULT_TASK
  */
 @Service
 public class TaskListServiceImpl implements TaskListService {
+    private final TaskListRepository taskListRepository;
+
     @Autowired
-    private TaskListRepository taskListRepository;
+    public TaskListServiceImpl(TaskListRepository taskListRepository) {
+        this.taskListRepository = taskListRepository;
+    }
 
     @Override
     public TaskList getTaskListById(UUID taskListId) {
@@ -36,11 +40,8 @@ public class TaskListServiceImpl implements TaskListService {
         return taskList.get();
     }
 
-    //    @PageableAsQueryParam // для маппинга Pageable в Swagger
     @Override
     public TaskListGroup getAllTaskLists(Pageable pageable, String title, LocalDateTime createDate, LocalDateTime updateDate) {
-        System.out.println("yes");
-
         TaskListGroup taskListGroup = new TaskListGroup();
 
         if (pageable.getPageSize() < 0 || pageable.getPageSize() > 100) {
@@ -50,8 +51,6 @@ public class TaskListServiceImpl implements TaskListService {
         taskListGroup.setTaskLists(taskListRepository.findByTitleAndAndCreateTimeAAndUpdateTime(title, createDate, updateDate, pageable));
         taskListGroup.setDoneTaskListCount(taskListRepository.countAllDoneTaskLists(title, createDate, updateDate));
         taskListGroup.setTodoTaskListCount(taskListGroup.getTaskLists().getTotalElements() - taskListGroup.getDoneTaskListCount());
-
-        System.out.println("no");
 
         return taskListGroup;
     }
