@@ -37,13 +37,6 @@ public class MapperConfig {
             }
         });
 
-        mapper.addMappings(new PropertyMap<Task, TaskDTO>() {
-            @Override
-            protected void configure() {
-                skip(destination.getPriority()); // приоритетность заполняем сами
-            }
-        });
-
         mapper.addConverter(getTaskListGroupDboToDtoConverter());
         mapper.addConverter(getTaskGroupDboToDtoConverter(mapper));
 
